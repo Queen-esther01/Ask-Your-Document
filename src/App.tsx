@@ -196,7 +196,7 @@ function App() {
 
 	const handleSubmit = async(e: React.FormEvent) => {
 		e.preventDefault();
-		console.log('question', question)
+		// console.log('question', question)
 		if (question.trim()) {
 			const payload = {
 				question: question,
@@ -205,7 +205,7 @@ function App() {
 			setMessages(prev => [...prev, { type: 'user', content: question }]);
 			setQuestion('');
 			const response = await getResponseMutation(payload)
-			console.log('response', response)
+			// console.log('response', response)
 			setMessages(prev => [...prev, { 
 				type: 'assistant', 
 				content: response 
@@ -213,8 +213,8 @@ function App() {
 		}
 	};
 
-	console.log(fileInStorage)
-	console.log('messages', messages)
+	// console.log(fileInStorage)
+	// console.log('messages', messages)
 	// if user swutches between file in history, reset conversation, show confirm modal for this
 	// pass name of file to chat completion for additional context
 	

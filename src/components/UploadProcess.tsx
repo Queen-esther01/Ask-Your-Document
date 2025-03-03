@@ -1,11 +1,6 @@
 import React from 'react'
-import { useStoreEmbeddingsMutation } from '../utils/helpers'
-import { useChunkTextMutation } from '../utils/helpers'
-import { useExtractTextMutation } from '../utils/helpers'
-import { useUploadMutation } from '../utils/helpers'
-import { useSummarizeMutation } from '../utils/helpers'
-import { Loader } from 'lucide-react'
-import { CheckCircle } from 'lucide-react'
+import { useStoreEmbeddingsMutation, useChunkTextMutation, useExtractTextMutation, useUploadMutation, useSummarizeMutation } from '../utils/helpers'
+import { Loader, CheckCircle } from 'lucide-react'
 
 const UploadProcess = ({
     fileInStorage,
@@ -15,11 +10,11 @@ const UploadProcess = ({
     uploadedFileData: { path: string, id: string } | null,
 }) => {
 
-    const { uploadFileMutation, uploadFileReset, uploadFilePending, uploadFileSuccess } = useUploadMutation()
-	const { extractTextMutation, extractTextReset, extractTextPending, extractTextSuccess } = useExtractTextMutation()
-	const { chunkTextMutation, chunkTextReset, chunkTextPending, chunkTextSuccess } = useChunkTextMutation()
-	const { storeEmbeddingsMutation, storeEmbeddingsReset, storeEmbeddingsPending, storeEmbeddingsSuccess } = useStoreEmbeddingsMutation()
-	const { summarizeMutation, summarizeReset, summarizePending, summarizeSuccess, summarizeError } = useSummarizeMutation(fileInStorage?.id || uploadedFileData?.id || '')
+    const { uploadFilePending, uploadFileSuccess } = useUploadMutation()
+	const { extractTextPending, extractTextSuccess } = useExtractTextMutation()
+	const { chunkTextPending, chunkTextSuccess } = useChunkTextMutation()
+	const { storeEmbeddingsPending, storeEmbeddingsSuccess } = useStoreEmbeddingsMutation()
+	const { summarizePending, summarizeSuccess } = useSummarizeMutation(fileInStorage?.id || uploadedFileData?.id || '')
     
     return (
         <div className={`mt-6 ${uploadFilePending || uploadFileSuccess ? 'divide-y divide-blue-500/30 flex flex-col [&>*]:py-3 text-teal-600' : 'hidden'}`}>

@@ -36,8 +36,8 @@ export const useUploadMutation = () => {
             localStorage.setItem('uploadedFiles', JSON.stringify(filesArray))
         },
         onError: (error) => {
-            console.log('error', error.message)
-            console.log('Error uploading file:', JSON.parse(error.message).error);
+            // console.log('error', error.message)
+            // console.log('Error uploading file:', JSON.parse(error.message).error);
             toast.error(`Error uploading file: ${JSON.parse(error.message).error}, ${JSON.parse(error.message).message}`);
         }
     })
@@ -94,8 +94,8 @@ export const useExtractTextMutation = () => {
             toast.success('Text extracted successfully');
         },
         onError: (error) => {
-            console.log('error', error.message)
-            console.log('Error uploading file:', JSON.parse(error.message).error);
+            // console.log('error', error.message)
+            // console.log('Error uploading file:', JSON.parse(error.message).error);
             toast.error(`Error uploading file: ${JSON.parse(error.message).error}`);
         }
     })
@@ -114,12 +114,12 @@ const summarize = async(data: string) => {
             ],
             max_tokens: 8000
         })
-        console.log('summarization result: ', result)
+        // console.log('summarization result: ', result)
         const summary = result.choices[0].message.content
-        console.log('summary: ', summary)
+        // console.log('summary: ', summary)
         return summary
     } catch (error) {
-        console.log('error summarizing: ', error) 
+        // console.log('error summarizing: ', error) 
         toast.error('Error summarizing text')
         throw error;
     }
@@ -142,8 +142,8 @@ export const useSummarizeMutation = (fileId: string) => {
             return data
         },
         onError: (error) => {
-            console.log('error', error.message)
-            console.log('Error summarizing text:', JSON.parse(error.message).error);
+            // console.log('error', error.message)
+            // console.log('Error summarizing text:', JSON.parse(error.message).error);
         }
     })
     return { summarizeMutation, summarizeReset, summarizePending, summarizeSuccess, summarizeError }
@@ -153,12 +153,12 @@ export const useSummarizeMutation = (fileId: string) => {
 export const useChunkTextMutation = () => {
     const { mutateAsync: chunkTextMutation, reset: chunkTextReset, isPending: chunkTextPending, isSuccess: chunkTextSuccess, isError: chunkTextError } = useMutation({
         mutationFn: chunkExtractedText,
-        onSuccess: (data) => {
+        onSuccess: () => {
             toast.success('Text chunked successfully');
         },
         onError: (error) => {
-            console.log('error', error.message)
-            console.log('Error chunking text:', JSON.parse(error.message).error);
+            // console.log('error', error.message)
+            // console.log('Error chunking text:', JSON.parse(error.message).error);
             toast.error(`Error chunking text: ${JSON.parse(error.message).error}`);
         }
     })
@@ -207,8 +207,8 @@ export const useStoreEmbeddingsMutation = () => {
             toast.success('Embeddings stored successfully');
         },
         onError: (error) => {
-            console.log('error', error.message)
-            console.log('Error storing embeddings:', JSON.parse(error.message).error);
+            // console.log('error', error.message)
+            // console.log('Error storing embeddings:', JSON.parse(error.message).error);
             toast.error(`Error storing embeddings: ${JSON.parse(error.message).error}`);
         }
     })
@@ -219,13 +219,13 @@ export const useStoreEmbeddingsMutation = () => {
 
 export const findNearestmatch = async (embedding: number[], file_id: string) => {
     try {
-        const { data, error } = await supabase.rpc('match_documents_test', {
+        const { data } = await supabase.rpc('match_documents_test', {
             query_embedding: embedding,
             match_threshold: 0.5, // 0-1threshold for similarity
             match_count: 3, // number of results to return
             target_file_id: file_id
         })
-        console.log(data)
+        // console.log(data)
         const match = data.map((obj: any) => obj.content).join('\n');
         return match
     } catch (error) {
@@ -286,8 +286,8 @@ export const query = async ({question, file_id}: {question: string, file_id: str
 export const useGetResponseMutation = () => {
     const { mutateAsync: getResponseMutation, reset: getResponseReset, isPending: getResponsePending, isSuccess: getResponseSuccess, isError: getResponseError } = useMutation({
         mutationFn: query,
-        onSuccess: (data) => {
-            console.log(data)
+        onSuccess: () => {
+            // console.log(data)
         }
     })
     return { getResponseMutation, getResponseReset, getResponsePending, getResponseSuccess, getResponseError }

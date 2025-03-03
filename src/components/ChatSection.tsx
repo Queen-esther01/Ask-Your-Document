@@ -22,7 +22,7 @@ const ChatSection = ({
     file: File | null,
 }) => {
 
-    const { getResponseMutation, getResponseReset, getResponsePending, getResponseSuccess, getResponseError } = useGetResponseMutation()
+    const { getResponsePending } = useGetResponseMutation()
     
     const messagesEndRef = useRef<HTMLDivElement>(null);
     
