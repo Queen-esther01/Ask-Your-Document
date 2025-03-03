@@ -249,6 +249,7 @@ export const getChatCompletion = async (match: string, query: string, summary?: 
         //     }
         //     return message
         // })
+        console.log('summary', summary)
         const updatedMessages = [...chatMessages, { role: "user", content: `Context: ${match} Question: ${query}`}]
         const response = await deepseek.chat.completions.create({
             model: "deepseek-chat",
