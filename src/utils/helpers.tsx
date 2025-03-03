@@ -90,7 +90,7 @@ export const useExtractTextMutation = () => {
     
     const { mutateAsync: extractTextMutation, reset: extractTextReset, isPending: extractTextPending, isSuccess: extractTextSuccess, isError: extractTextError } = useMutation({
         mutationFn: extractText,
-        onSuccess: (data) => {
+        onSuccess: () => {
             toast.success('Text extracted successfully');
         },
         onError: (error) => {
@@ -141,7 +141,7 @@ export const useSummarizeMutation = (fileId: string) => {
             localStorage.setItem('uploadedFiles', JSON.stringify(updatedFiles))
             return data
         },
-        onError: (error) => {
+        onError: () => {
             // console.log('error', error.message)
             // console.log('Error summarizing text:', JSON.parse(error.message).error);
         }
@@ -157,8 +157,6 @@ export const useChunkTextMutation = () => {
             toast.success('Text chunked successfully');
         },
         onError: (error) => {
-            // console.log('error', error.message)
-            // console.log('Error chunking text:', JSON.parse(error.message).error);
             toast.error(`Error chunking text: ${JSON.parse(error.message).error}`);
         }
     })
@@ -243,7 +241,7 @@ const chatMessages = [
     }
 ]
 
-export const getChatCompletion = async (match: string, query: string, summary: string) => {
+export const getChatCompletion = async (match: string, query: string, summary?: string) => {
     try {
         // const updateSystemMessage = chatMessages.map((message) => {
         //     if(message.role === 'system') {

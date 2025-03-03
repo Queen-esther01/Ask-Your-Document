@@ -1,12 +1,6 @@
-import { X } from 'lucide-react'
-import { CheckCircle } from 'lucide-react'
-import { Loader } from 'lucide-react'
-import { Book } from 'lucide-react'
-import { Upload } from 'lucide-react'
+import { X, Loader, Book, Upload } from 'lucide-react'
 import React from 'react'
-import { useSummarizeMutation, useUploadMutation } from '../utils/helpers'
-import { useChunkTextMutation, useExtractTextMutation, useGetResponseMutation } from '../utils/helpers'
-import { useStoreEmbeddingsMutation } from '../utils/helpers'
+import { useSummarizeMutation, useUploadMutation, useChunkTextMutation, useExtractTextMutation, useStoreEmbeddingsMutation } from '../utils/helpers'
 import UploadProcess from './UploadProcess'
 
 const UploadSection = ({

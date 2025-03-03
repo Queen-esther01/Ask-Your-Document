@@ -1,4 +1,3 @@
-import React from 'react'
 import { useStoreEmbeddingsMutation, useChunkTextMutation, useExtractTextMutation, useUploadMutation, useSummarizeMutation } from '../utils/helpers'
 import { Loader, CheckCircle } from 'lucide-react'
 

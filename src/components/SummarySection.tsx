@@ -1,6 +1,4 @@
 import { ScrollText, Sparkles } from 'lucide-react'
-import React from 'react'
-
 const SummarySection = ({
     file,
     summarizePending,
