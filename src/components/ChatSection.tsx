@@ -44,7 +44,10 @@ const ChatSection = ({
     const messagesEndRef = useRef<HTMLDivElement>(null);
     
     const scrollToBottom = () => {
-		messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });
+		messagesEndRef.current?.scrollTo({
+            top: messagesEndRef.current.scrollHeight,
+            behavior: "smooth"
+        });
 	};
 
 	useEffect(() => {
@@ -58,7 +61,7 @@ const ChatSection = ({
                 <h2 className="text-2xl font-semibold text-blue-200">Chat Insights</h2>
             </div>
 
-            <div className="h-[400px] overflow-y-auto pb-10 mb-4 space-y-4">
+            <div className="h-[400px] overflow-y-auto pb-10 mb-4 space-y-4" ref={messagesEndRef}>
                 {
                     messages.map((message, index) => (
                         <div
@@ -86,7 +89,6 @@ const ChatSection = ({
                     )
                 )}
             </div>
-            <div ref={messagesEndRef} />
 
             <form onSubmit={handleSubmit} className="flex gap-2">
                 <textarea

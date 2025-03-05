@@ -22,6 +22,7 @@ function App() {
 	
 	const { summarizePending } = useSummarizeMutation(fileInStorage?.id || uploadedFileData?.id || '')
 
+	
 
 	// if user swutches between file in history, reset conversation, show confirm modal for this
 	// pass name of file to chat completion for additional context
@@ -30,7 +31,7 @@ function App() {
 
 	return (
 		<div className="min-h-screen bg-[#110f2e] text-white">
-			<Header setFile={setFileInStorage}/>
+			<Header setMessages={setMessages} setUploadedFileData={setUploadedFileData} setFile={setFileInStorage} setSummary={setSummary}/>
 			{/* Main Content */}
 			<div className="container mx-auto px-5 md:px-20 py-8">
 				<div className="grid xl:grid-cols-2 gap-8">
@@ -48,9 +49,9 @@ function App() {
 					<div>
 						{/* Summary Section */}
 						<SummarySection 
-							file={file}
+							file={file || fileInStorage}
 							summarizePending={summarizePending}
-							summary={summary}
+							summary={summary || JSON.parse(localStorage.getItem('uploadedFiles') || '[]').find((file: { path: string }) => file.path === fileInStorage?.path)?.summary}
 						/>
 						
 						{/* Chat Section */}

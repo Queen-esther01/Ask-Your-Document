@@ -5,7 +5,7 @@ const SummarySection = ({
     summarizePending,
     summary,
 }: {
-    file: File | null,
+    file: File | { path: string, id: string } | null,
     summarizePending: boolean,
     summary: string,
 }) => {
@@ -14,7 +14,7 @@ const SummarySection = ({
     
     return (
         <>
-            {(file || summarizePending) && (
+            {(file || summarizePending ) && (
                 <div className="bg-purple-900/20 p-6 rounded-lg border border-purple-500/30 backdrop-blur-sm mb-3">
                     <div className="flex items-center gap-3 mb-4">
                         <ScrollText className="text-purple-400" />

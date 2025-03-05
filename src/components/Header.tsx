@@ -1,6 +1,16 @@
 import React, { useState, useEffect } from 'react'
 
-const Header = ({ setFile }: { setFile: (file: { path: string, id: string }) => void }) => {
+const Header = ({ 
+    setFile, 
+    setMessages, 
+    setSummary,
+    setUploadedFileData
+}: { 
+    setFile: (file: { path: string, id: string }) => void, 
+    setMessages: (messages: any[]) => void, 
+    setSummary: (summary: string) => void,
+    setUploadedFileData: (uploadedFileData: null) => void
+}) => {
 
     const storedFiles = localStorage.getItem('uploadedFiles')
     const filesArray = storedFiles ? JSON.parse(storedFiles) : []
@@ -51,7 +61,12 @@ const Header = ({ setFile }: { setFile: (file: { path: string, id: string }) => 
                                     <button
                                         key={file.id} 
                                         className="p-3 w-full cursor-pointer hover:bg-blue-900/20 border-b border-blue-900/30 last:border-0"
-                                        onClick={() => setFile(file)}
+                                        onClick={() => {
+                                            setFile(file)
+                                            setMessages([])
+                                            setSummary('')
+                                            setUploadedFileData(null)
+                                        }}
                                     >
                                         <p className="text-blue-100 text-sm text-left">{file.path}</p>
                                     </button>
