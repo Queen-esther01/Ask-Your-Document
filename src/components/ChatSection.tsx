@@ -1,28 +1,45 @@
-import { Loader } from 'lucide-react'
-import { Sparkles } from 'lucide-react'
-import { MessageCircle } from 'lucide-react'
-import React, { useEffect, useRef } from 'react'
+import { Loader, Sparkles, MessageCircle } from 'lucide-react'
+import React, { Dispatch, SetStateAction, useEffect, useRef } from 'react'
 import { useGetResponseMutation } from '../utils/helpers'
 import { Message } from '../App'
 import Markdown from 'react-markdown'
 
 const ChatSection = ({
     messages,
-    handleSubmit,
     question,
     setQuestion,
     fileInStorage,
     file,
+    setMessages,
+    uploadedFileData,
 }: {
     messages: Message[],
-    handleSubmit: (e: React.FormEvent<HTMLFormElement>) => void,
     question: string,
     setQuestion: (question: string) => void,
     fileInStorage: { path: string, id: string } | null,
     file: File | null,
+    setMessages: Dispatch<SetStateAction<Message[]>>,
+    uploadedFileData: { path: string, id: string } | null,
 }) => {
 
-    const { getResponsePending } = useGetResponseMutation()
+    const { getResponsePending, getResponseMutation } = useGetResponseMutation()
+
+    const handleSubmit = async(e: React.FormEvent) => {
+		e.preventDefault();
+		if (question.trim()) {
+			const payload = {
+				question: question,
+				file_id: uploadedFileData?.id || fileInStorage?.id || '',
+			}
+			setMessages((prev) => [...prev, { type: 'user', content: question }]);
+			setQuestion('');
+			const response = await getResponseMutation(payload)
+			setMessages((prev) => [...prev, { 
+				type: 'assistant', 
+				content: response 
+			}]);
+		}
+	};
     
     const messagesEndRef = useRef<HTMLDivElement>(null);
     

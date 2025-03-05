@@ -1,136 +1,66 @@
-import { useStoreEmbeddingsMutation, useChunkTextMutation, useExtractTextMutation, useUploadMutation, useSummarizeMutation } from '../utils/helpers'
 import { Loader, CheckCircle } from 'lucide-react'
 
-const UploadProcess = ({
-    fileInStorage,
-    uploadedFileData,
-}: {
-    fileInStorage: { path: string, id: string } | null,
-    uploadedFileData: { path: string, id: string } | null,
+const ProcessStep = ({ isPending, isSuccess, pendingText, successText }: {
+    isPending: boolean;
+    isSuccess: boolean;
+    pendingText: string;
+    successText: string;
 }) => {
-
-    const { uploadFilePending, uploadFileSuccess } = useUploadMutation()
-	const { extractTextPending, extractTextSuccess } = useExtractTextMutation()
-	const { chunkTextPending, chunkTextSuccess } = useChunkTextMutation()
-	const { storeEmbeddingsPending, storeEmbeddingsSuccess } = useStoreEmbeddingsMutation()
-	const { summarizePending, summarizeSuccess } = useSummarizeMutation(fileInStorage?.id || uploadedFileData?.id || '')
+    if (!isPending && !isSuccess) return null;
     
     return (
-        <div className={`mt-6 ${uploadFilePending || uploadFileSuccess ? 'divide-y divide-blue-500/30 flex flex-col [&>*]:py-3 text-teal-600' : 'hidden'}`}>
-            {
-                (uploadFilePending || uploadFileSuccess) && 
-                <div>
-                    <div className="flex items-center justify-between">
-                        <p>
-                            {
-                                uploadFilePending 
-                                ? "Uploading file..." 
-                                : uploadFileSuccess 
-                                ? "File uploaded successfully" 
-                                : null
-                            }
-                        </p>
-                        {
-                            uploadFilePending ? (
-                                <Loader className="animate-spin w-4 h-4" />
-                            ) : uploadFileSuccess ? (
-                                <CheckCircle className="text-green-400 w-4 h-4" />
-                            ) : null
-                        }
-                    </div>
-                </div>
-            }
-            {
-                (extractTextPending || extractTextSuccess) &&
-                <div>
-                    <div className="flex items-center justify-between">
-                        <p>
-                            {
-                                extractTextPending 
-                                ? "Extracting text..." 
-                                : extractTextSuccess 
-                                ? "Text extracted successfully" 
-                                : null
-                            }
-                        </p>
-                        {
-                            extractTextPending ? (
-                                <Loader className="animate-spin w-4 h-4" />
-                            ) : extractTextSuccess ? (
-                                <CheckCircle className="text-green-400 w-4 h-4" />
-                            ) : null
-                        }
-                    </div>
-                </div>
-            }
-            {
-                (summarizePending || summarizeSuccess) &&
-                <div>
-                    <div className="flex items-center justify-between">
-                        <p>
-                            {
-                                summarizePending 
-                                ? "Summarizing text..." 
-                                : summarizeSuccess 
-                                ? "Text summarized successfully" 
-                                : null
-                            }
-                        </p>
-                        {
-                            summarizePending ? (
-                                <Loader className="animate-spin w-4 h-4" />
-                            ) : summarizeSuccess ? (
-                                <CheckCircle className="text-green-400 w-4 h-4" />
-                            ) : null
-                        }
-                    </div>
-                </div>
-            }
-            {
-                (chunkTextPending || chunkTextSuccess) &&
-                <div>
-                    <div className="flex items-center justify-between">
-                        <p>
-                            {
-                                chunkTextPending 
-                                ? "Chunking text..." 
-                                : chunkTextSuccess 
-                                ? "Text chunked successfully" 
-                                : null
-                            }
-                        </p>
-                        {
-                            chunkTextPending ? (
-                                <Loader className="animate-spin w-4 h-4" />
-                            ) : chunkTextSuccess ? (
-                                <CheckCircle className="text-green-400 w-4 h-4" />
-                            ) : null
-                        }
-                    </div>
-                </div>
-            }
-            {(storeEmbeddingsPending || storeEmbeddingsSuccess) &&
-                <div>
-                    <div className="flex items-center justify-between">
-                        <p>
-                            {
-                                storeEmbeddingsPending 
-                                ? "Creating embeddings..." 
-                                : storeEmbeddingsSuccess 
-                                ? "Embeddings created successfully" 
-                                : null
-                            }
-                        </p>
-                        {
-                            storeEmbeddingsPending ? (
-                                <Loader className="animate-spin w-4 h-4" />
-                            ) : storeEmbeddingsSuccess ? (
-                                <CheckCircle className="text-green-400 w-4 h-4" />
-                            ) : null
-                        }
-                    </div>
-                </div>
-            }
+        <div>
+            <div className="flex items-center justify-between">
+                <p>{isPending ? pendingText : successText}</p>
+                {isPending ? (
+                    <Loader className="animate-spin w-4 h-4" />
+                ) : (
+                    <CheckCircle className="text-green-400 w-4 h-4" />
+                )}
+            </div>
+        </div>
+    );
+};
+
+const UploadProcess = ({
+    uploadFilePending,
+    uploadFileSuccess,
+    extractTextPending,
+    extractTextSuccess,
+    chunkTextPending,
+    chunkTextSuccess,
+    storeEmbeddingsPending,
+    storeEmbeddingsSuccess,
+    summarizePending,
+    summarizeSuccess,
+}: {
+    uploadFilePending: boolean,
+    uploadFileSuccess: boolean,
+    extractTextPending: boolean,
+    extractTextSuccess: boolean,
+    chunkTextPending: boolean,
+    chunkTextSuccess: boolean,
+    storeEmbeddingsPending: boolean,
+    storeEmbeddingsSuccess: boolean,
+    summarizePending: boolean,
+    summarizeSuccess: boolean,
+}) => {
+
+    const steps = [
+        { isPending: uploadFilePending, isSuccess: uploadFileSuccess, pendingText: "Uploading file...", successText: "File uploaded successfully" },
+        { isPending: extractTextPending, isSuccess: extractTextSuccess, pendingText: "Extracting text...", successText: "Text extracted successfully" },
+        { isPending: summarizePending, isSuccess: summarizeSuccess, pendingText: "Summarizing text...", successText: "Text summarized successfully" },
+        { isPending: chunkTextPending, isSuccess: chunkTextSuccess, pendingText: "Chunking text...", successText: "Text chunked successfully" },
+        { isPending: storeEmbeddingsPending, isSuccess: storeEmbeddingsSuccess, pendingText: "Creating embeddings...", successText: "Embeddings created successfully" }
+    ];
+
+    if (!uploadFilePending && !uploadFileSuccess) return null;
+
+    return (
+        <div className="mt-6 divide-y divide-blue-500/30 flex flex-col [&>*]:py-3 text-teal-600">
+            {steps.map((step, index) => (
+                <ProcessStep key={index} {...step} />
+            ))}
         </div>
     )
 }

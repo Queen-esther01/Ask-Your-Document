@@ -1,39 +1,111 @@
 import { X, Loader, Book, Upload } from 'lucide-react'
-import React from 'react'
+import React, { useState } from 'react'
 import { useSummarizeMutation, useUploadMutation, useChunkTextMutation, useExtractTextMutation, useStoreEmbeddingsMutation } from '../utils/helpers'
 import UploadProcess from './UploadProcess'
+import toast from 'react-hot-toast'
 
 const UploadSection = ({
     file,
     fileInStorage,
     setFile,
     setFileInStorage,
-    selectFile,
     uploadedFileData,
-    setHideAnalyzeButton,
-    hideAnalyzeButton,
     setSummary,
     setMessages,
-    uploadFileAndExtractText,
+    setUploadedFileData,
 }: {
     file: File | null,
     fileInStorage: { path: string, id: string } | null,
     setFile: (file: File | null) => void,
     setFileInStorage: (file: { path: string, id: string } | null) => void,
-    selectFile: (e: React.ChangeEvent<HTMLInputElement>) => void,
     uploadedFileData: { path: string, id: string } | null,
-    setHideAnalyzeButton: (hideAnalyzeButton: boolean) => void,
-    hideAnalyzeButton: boolean,
     setSummary: (summary: string) => void,
     setMessages: (messages: any) => void,
-    uploadFileAndExtractText: (file: File) => void,
+    setUploadedFileData: (uploadedFileData: { path: string, id: string } | null) => void,
 }) => {
 
-    const { uploadFileReset, uploadFilePending } = useUploadMutation()
-	const { extractTextReset, extractTextPending } = useExtractTextMutation()
-	const { chunkTextReset, chunkTextPending } = useChunkTextMutation()
-	const { storeEmbeddingsReset, storeEmbeddingsPending } = useStoreEmbeddingsMutation()
-	const { summarizeReset } = useSummarizeMutation(fileInStorage?.id || uploadedFileData?.id || '')
+    const [hideAnalyzeButton, setHideAnalyzeButton] = useState(false)
+
+    const { uploadFileReset, uploadFilePending, uploadFileMutation, uploadFileSuccess } = useUploadMutation()
+	const { extractTextReset, extractTextPending, extractTextMutation, extractTextSuccess } = useExtractTextMutation()
+	const { chunkTextReset, chunkTextPending, chunkTextMutation, chunkTextSuccess } = useChunkTextMutation()
+	const { storeEmbeddingsReset, storeEmbeddingsPending, storeEmbeddingsMutation, storeEmbeddingsSuccess } = useStoreEmbeddingsMutation()
+	const { summarizeReset, summarizePending, summarizeMutation, summarizeSuccess } = useSummarizeMutation(fileInStorage?.id || uploadedFileData?.id || '')
+
+    // select file from local file system
+	const selectFile = (e: React.ChangeEvent<HTMLInputElement>) => {
+		const selectedFile = e.target.files?.[0];
+		if (selectedFile && (selectedFile.type === 'text/plain' || selectedFile.type === 'application/pdf')) {
+			// Check if file is greater than 1mb 
+			if (selectedFile.size > 1024 * 1024) {
+				toast.error('File size must be less than 1MB');
+				return;
+			}
+			// Check if file is already in localStorage
+			const existingFileArray = JSON.parse(localStorage.getItem('uploadedFiles') || '[]')
+			const existingFile = existingFileArray?.find((file: { path: string }) => file.path === selectedFile.name)
+			if (existingFile) {
+				toast.success('This file is already loaded from history');
+				setFileInStorage(existingFile)
+				return;
+			}
+			setFile(selectedFile);
+		} else {
+			alert('Please upload a pdf or txt file');
+		}
+	};
+
+
+    // upload file to supabase, extract text, chunk text, create embeddings
+	const uploadFileAndExtractText = async (file: File) => {
+		try {
+			setHideAnalyzeButton(true);
+	
+			// Upload file
+			const resolvedFileData = await uploadFileMutation(file);
+			setUploadedFileData(resolvedFileData);
+			if(!resolvedFileData) return;
+	
+			// Extract and process text
+			const extractedData = await extractTextMutation(file);
+			if (!extractedData) return;
+	
+			// Set extracted text and get summary
+			const summarizedData = await summarizeMutation(extractedData);
+			setSummary(summarizedData || '');
+			if(!summarizedData) return;
+	
+			// Chunk text and store embeddings
+			const chunkedData = await chunkTextMutation(extractedData);
+			storeEmbeddingsMutation({
+				chunkedData,
+				resolvedFileData,
+				summary: summarizedData
+			});
+		} catch (error) {
+			console.error('Error processing file:', error);
+			// Reset all states
+			uploadFileReset();
+			extractTextReset();
+			chunkTextReset();
+			storeEmbeddingsReset();
+			summarizeReset()
+		} finally {
+			
+		}
+	};
+
+    // const testSummary = async(file: File) => {
+	// 	await extractTextMutation(file)
+	// 	.then(async(data) => {
+	// 		if(data) {
+	// 			console.log('extracted text: ', data)
+	// 			const summarizedData = await summarizeMutation(data);
+	// 			console.log('summarized data: ', summarizedData)
+	// 			setSummary(summarizedData || '');
+	// 		}
+	// 	})
+	// }
 
     return (
         <div className="relative bg-blue-900/20 p-6 rounded-lg border border-blue-500/30 backdrop-blur-sm">
@@ -87,11 +159,19 @@ const UploadSection = ({
                         </button>
                     </div>
                     <UploadProcess
-                        fileInStorage={fileInStorage}
-                        uploadedFileData={uploadedFileData}
+                        uploadFilePending={uploadFilePending}
+                        uploadFileSuccess={uploadFileSuccess}
+                        extractTextPending={extractTextPending}
+                        extractTextSuccess={extractTextSuccess}
+                        chunkTextPending={chunkTextPending}
+                        chunkTextSuccess={chunkTextSuccess}
+                        storeEmbeddingsPending={storeEmbeddingsPending}
+                        storeEmbeddingsSuccess={storeEmbeddingsSuccess}
+                        summarizePending={summarizePending}
+                        summarizeSuccess={summarizeSuccess}
                     />
                     {
-                        ((hideAnalyzeButton && file) || (hideAnalyzeButton && fileInStorage)) &&
+                        ((storeEmbeddingsSuccess && file) || (hideAnalyzeButton && fileInStorage)) &&
                         <div className='flex justify-center'>
                             <h2 className='text-green-400 mt-10'>The chat is ready! Ask away!</h2>
                         </div>
@@ -112,7 +192,7 @@ const UploadSection = ({
                                     : "Analyze File"
                                 }
                             </button>
-                        </div>
+                        </div> 
                     }
                 </div>
             )}

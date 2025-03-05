@@ -1,17 +1,17 @@
 import { ScrollText, Sparkles } from 'lucide-react'
+import { useState } from 'react';
 const SummarySection = ({
     file,
     summarizePending,
     summary,
-    isExpanded,
-    setIsExpanded,
 }: {
     file: File | null,
     summarizePending: boolean,
     summary: string,
-    isExpanded: boolean,
-    setIsExpanded: (isExpanded: boolean) => void,
 }) => {
+
+    const [isExpanded, setIsExpanded] = useState(false);
+    
     return (
         <>
             {(file || summarizePending) && (
